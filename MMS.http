@@ -1,0 +1,6 @@
+@MMS_HostAddress = http://localhost:5265
+
+GET {{MMS_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
