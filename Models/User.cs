@@ -11,13 +11,13 @@ namespace MMS.API.Models
         public int UserId { get; set; }
 
         [Column("name")] // Map to the database column "name"
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Column("email")] // Map to the database column "email"
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Column("password")] // Map to the database column "password"
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
         [Column("role_id")] // Map to the database column "role_id"
         public int RoleId { get; set; }
