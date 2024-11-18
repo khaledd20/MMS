@@ -3,17 +3,15 @@ using MMS.API.Models;
 
 namespace MMS.API.Data
 {
-    public class MMSDbContext : DbContext
+    public class MMSDbContext(DbContextOptions<MMSDbContext> options) : DbContext(options)
     {
-        public MMSDbContext(DbContextOptions<MMSDbContext> options) : base(options) { }
-
-        public DbSet<User> Users { get; set; }
+        public required DbSet<User> Users { get; set; }
         
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Meeting> Meetings { get; set; }
+        public required DbSet<Role> Roles { get; set; }
+        public required DbSet<Permissions> Permissions { get; set; }
+        public required DbSet<Meeting> Meetings { get; set; }
 
-        public DbSet<Meeting> Permissions_Role { get; set; }
+        public required DbSet<Permission_Role> Permission_Role { get; set; }
 
     }
 }

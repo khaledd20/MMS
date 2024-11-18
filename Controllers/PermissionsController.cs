@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MMS.API.Data;
-using MMS.API.Models;
 using System.Linq;
 
 namespace MMS.API.Controllers
@@ -29,19 +28,33 @@ namespace MMS.API.Controllers
                 return Unauthorized("User role not found in token.");
             }
 
-            // Fetch permissions based on the user's role
-            var roleId = int.Parse(userRoleId);
-            var permissions = _context.Permission_Role
-                .Where(pr => pr.RoleId == roleId)
-                .Select(pr => pr.Permission.Name)
-                .ToList();
+            // Convert roleId from string to integer
+            if (!int.TryParse(userRoleId, out int roleId))
+            {
+                return BadRequest("Invalid RoleId in token.");
+            }
 
-            if (permissions == null || !permissions.Any())
+            // Fetch permissions using joins across the three tables
+            var permissions = (from pr in _context.Permission_Role
+                               join p in _context.Permissions on pr.PermissionId equals p.PermissionId
+                               join r in _context.Roles on pr.RoleId equals r.RoleId
+                               where pr.RoleId == roleId
+                               select new
+                               {
+                                   PermissionName = p.PermissionName,
+                                   RoleName = r.RoleName
+                               }).ToList();
+
+            if (!permissions.Any())
             {
                 return NotFound("No permissions found for the specified role.");
             }
 
-            return Ok(new { RoleId = roleId, Permissions = permissions });
+            return Ok(new
+            {
+                RoleId = roleId,
+                Permissions = permissions
+            });
         }
     }
 }

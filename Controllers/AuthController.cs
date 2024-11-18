@@ -37,7 +37,7 @@ namespace MMS.API.Controllers
             // Return token in a detailed format
             return Ok(new
             {
-                accessToken = tokenString,
+                Bearer = tokenString,
                 tokenType = "Bearer",
                 expiresIn = 3600 // 1 hour in seconds
             });

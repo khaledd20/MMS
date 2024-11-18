@@ -13,7 +13,34 @@ builder.Services.AddDbContext<MMSDbContext>(options =>
 // Add services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIs...\"",
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
 
 // JWT Configuration
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "DefaultSecureKey"; // Load key from appsettings.json or use a default for development
@@ -41,32 +68,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
-
-app.Use(async (context, next) =>
-{
-    var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
-    if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-    {
-        Console.WriteLine("Invalid or missing Authorization Header.");
-        if (!string.IsNullOrEmpty(authHeader))
-        {
-            Console.WriteLine($"Received Authorization Header: {authHeader}");
-        }
-    }
-    else
-    {
-        Console.WriteLine("Valid Authorization Header detected.");
-        Console.WriteLine($"Authorization Header: {authHeader}");
-    }
-
-    await next();
-});
-
-
 app.UseAuthorization();
 
 app.MapControllers();
