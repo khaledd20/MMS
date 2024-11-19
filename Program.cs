@@ -12,6 +12,20 @@ builder.Services.AddDbContext<MMSDbContext>(options =>
 
 // Add services
 builder.Services.AddControllers();
+
+// Configure CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200") // Allow Angular frontend
+               .AllowAnyHeader() // Allow all headers
+               .AllowAnyMethod(); // Allow all HTTP methods
+    });
+});
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -69,6 +83,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseHttpsRedirection();
+    app.UseCors("AllowAngularApp");
+
 }
 
 app.UseHttpsRedirection();
