@@ -43,6 +43,31 @@ namespace MMS.API.Controllers
             });
         }
 
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] RegisterRequest request)
+        {
+            // Check if the email is already registered
+            if (_context.Users.Any(u => u.Email == request.Email))
+            {
+                return Conflict("Email is already registered.");
+            }
+
+            // Create a new user
+            var newUser = new User
+            {
+                Name = request.Name,
+                Email = request.Email,
+                Password = request.Password, // NOTE: Hash the password in a real-world application
+                RoleId = request.RoleId
+            };
+
+            // Add user to the database
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
+             return Ok();
+
+        }
+        
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
