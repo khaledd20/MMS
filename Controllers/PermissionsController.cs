@@ -6,7 +6,7 @@ using System.Linq;
 namespace MMS.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/permissions")]
     public class PermissionsController : ControllerBase
     {
         private readonly MMSDbContext _context;
