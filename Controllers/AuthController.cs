@@ -78,7 +78,9 @@ namespace MMS.API.Controllers
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim("RoleId", user.RoleId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim("UserId", user.UserId.ToString()) // Add UserId to the claims
+
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor

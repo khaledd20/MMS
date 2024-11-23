@@ -46,7 +46,6 @@ namespace MMS.API.Controllers
 
         // POST: api/meetings
         [HttpPost]
-        [HttpPost]
         public async Task<IActionResult> CreateMeeting([FromBody] Meeting meeting)
         {
             if (!ModelState.IsValid)
@@ -78,11 +77,6 @@ namespace MMS.API.Controllers
                 return BadRequest("Meeting ID mismatch.");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             var existingMeeting = await _context.Meetings.FindAsync(id);
             if (existingMeeting == null)
             {
@@ -94,7 +88,8 @@ namespace MMS.API.Controllers
             existingMeeting.Date = meeting.Date;
             existingMeeting.Time = meeting.Time;
             existingMeeting.Status = meeting.Status;
-            existingMeeting.OrganizerId = meeting.OrganizerId;
+            existingMeeting.Description = meeting.Description;
+            existingMeeting.OrganizerId = meeting.OrganizerId; // Use organizerId directly
 
             _context.Entry(existingMeeting).State = EntityState.Modified;
 
@@ -102,18 +97,15 @@ namespace MMS.API.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException ex)
             {
-                if (!_context.Meetings.Any(m => m.MeetingId == id))
-                {
-                    return NotFound($"Meeting with ID {id} not found.");
-                }
-
-                throw;
+                return BadRequest($"Failed to update meeting: {ex.Message}");
             }
 
-            return NoContent();
+            return Ok(existingMeeting); // Return updated meeting for confirmation
         }
+
+
 
         // DELETE: api/meetings/{id}
         [HttpDelete("{id}")]
@@ -128,7 +120,8 @@ namespace MMS.API.Controllers
             _context.Meetings.Remove(meeting);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Meeting deleted successfully.");
         }
-    }
+
+     }
 }
