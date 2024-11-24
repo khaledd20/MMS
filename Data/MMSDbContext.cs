@@ -13,5 +13,7 @@ namespace MMS.API.Data
 
         public required DbSet<Permission_Role> Permission_Role { get; set; }
 
+        public required DbSet<Attendee> Attendees { get; set; }
+
     }
 }
