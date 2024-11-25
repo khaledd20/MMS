@@ -68,6 +68,32 @@ namespace MMS.API.Controllers
 
         }
         
+        [HttpGet("search")]
+        public IActionResult SearchUser(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest("Query cannot be empty.");
+            }
+
+            var user = _context.Users
+                .Where(u => u.Name.Contains(query) || u.Email.Contains(query))
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.Name,
+                    u.Email
+                })
+                .ToList();
+
+            if (!user.Any())
+            {
+                return NotFound("No user found matching the query.");
+            }
+
+            return Ok(user);
+        }
+
         private string GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

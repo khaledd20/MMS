@@ -43,35 +43,45 @@ namespace MMS.API.Controllers
 
         // POST: meetings/{meetingId}/attendees
         [HttpPost]
-        public async Task<IActionResult> AddAttendee(int meetingId, [FromBody] Attendee attendee)
+        public async Task<IActionResult> AddAttendee(int meetingId, [FromBody] AttendeeRequest request)
         {
+            if (request == null || request.UserId <= 0 || meetingId <= 0)
+            {
+                return BadRequest(new { message = "Invalid user or meeting data." });
+            }
+
             var meeting = await _context.Meetings.FindAsync(meetingId);
             if (meeting == null)
             {
-                return NotFound($"Meeting with ID {meetingId} not found.");
+                return NotFound(new { message = "Meeting not found." });
             }
 
-            var user = await _context.Users.FindAsync(attendee.UserId);
+            var user = await _context.Users.FindAsync(request.UserId);
             if (user == null)
             {
-                return BadRequest("Invalid User ID.");
+                return BadRequest(new { message = "Invalid User ID." });
             }
 
-            // Check if attendee already exists
             var existingAttendee = await _context.Attendees
-                .FirstOrDefaultAsync(a => a.MeetingId == meetingId && a.UserId == attendee.UserId);
+                .FirstOrDefaultAsync(a => a.MeetingId == meetingId && a.UserId == request.UserId);
 
             if (existingAttendee != null)
             {
-                return BadRequest("User is already an attendee of this meeting.");
+                return Conflict(new { message = "User is already an attendee." });
             }
 
-            attendee.MeetingId = meetingId;
+            var attendee = new Attendee
+            {
+                MeetingId = meetingId,
+                UserId = request.UserId
+            };
+
             _context.Attendees.Add(attendee);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetAttendees), new { meetingId }, attendee);
         }
+
 
         // DELETE: meetings/{meetingId}/attendees/{attendeeId}
         [HttpDelete("{attendeeId}")]
@@ -90,5 +100,8 @@ namespace MMS.API.Controllers
 
             return NoContent();
         }
-    }
+
+    }   
 }
+    
+

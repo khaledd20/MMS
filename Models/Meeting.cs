@@ -24,5 +24,8 @@ namespace MMS.API.Models
         public required string Status { get; set; }
 
         public string? Description { get; set; } // Optional field for meeting description
+
+        public ICollection<Attendee> Attendees { get; set; }
+
     }
 }

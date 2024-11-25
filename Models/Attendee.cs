@@ -1,10 +1,19 @@
-public class Attendee
-{
-    public int Id { get; set; }
-    public int MeetingId { get; set; }
-    public int UserId { get; set; }
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-    // Navigation properties
-    public Meeting Meeting { get; set; }
-    public User User { get; set; }
+namespace MMS.API.Models
+{
+    public class Attendee
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Column("meeting_id")] // Map to the correct column name
+        public int MeetingId { get; set; }
+        public Meeting Meeting { get; set; }
+
+        [Column("user_id")] // Map to the correct column name
+        public int UserId { get; set; }
+        public User User { get; set; }
+    }
 }
