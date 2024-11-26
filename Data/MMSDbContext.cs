@@ -17,6 +17,7 @@ namespace MMS.API.Data
         public required DbSet<Meeting> Meetings { get; set; }
         public required DbSet<Permission_Role> Permission_Role { get; set; }
         public required DbSet<Attendee> Attendees { get; set; }
+        public required DbSet<MeetingMinute> Minutes { get; set; } // Add this line
 
         // Configure relationships and mappings
         protected override void OnModelCreating(ModelBuilder modelBuilder)
