@@ -44,6 +44,23 @@ namespace MMS.API.Controllers
             return Ok(meeting);
         }
 
+        // GET: api/meetings/organizer/{organizerId}
+        [HttpGet("organizer/{organizerId}")]
+        public async Task<IActionResult> GetMeetingsByOrganizer(int organizerId)
+        {
+            var meetings = await _context.Meetings
+                .Where(m => m.OrganizerId == organizerId)
+                .Include(m => m.Organizer) // Include organizer details
+                .ToListAsync();
+
+            if (!meetings.Any())
+            {
+                return NotFound("No meetings found for this organizer.");
+            }
+
+            return Ok(meetings);
+        }
+
         // POST: api/meetings
         [HttpPost]
         public async Task<IActionResult> CreateMeeting([FromBody] Meeting meeting)
