@@ -67,7 +67,22 @@ namespace MMS.API.Controllers
              return Ok();
 
         }
-        
+         // GET ALL USERS ENDPOINT
+        [HttpGet("users")]
+        public IActionResult GetAllUsers()
+        {
+            var users = _context.Users.Select(u => new
+            {
+                u.UserId,
+                u.Name,
+                u.Email,
+                u.Password,
+                u.RoleId
+            }).ToList();
+
+            return Ok(users);
+        }
+
         [HttpGet("search")]
         public IActionResult SearchUser(string query)
         {
@@ -92,6 +107,100 @@ namespace MMS.API.Controllers
             }
 
             return Ok(user);
+        }
+        [HttpPut("users/{userId}")]
+        public IActionResult UpdateUser(int userId, [FromBody] User updateRequest)
+        {
+            Console.WriteLine($"Received update request for UserId: {userId}");
+            Console.WriteLine($"Name: {updateRequest.Name}");
+            Console.WriteLine($"Email: {updateRequest.Email}");
+            Console.WriteLine($"Password: {updateRequest.Password}");
+
+            // Find the user by ID
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Validate and update fields only if provided
+            if (!string.IsNullOrWhiteSpace(updateRequest.Name))
+            {
+                user.Name = updateRequest.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateRequest.Email))
+            {
+                // Ensure email is not already in use by another user
+                var existingUser = _context.Users.FirstOrDefault(u => u.Email == updateRequest.Email && u.UserId != userId);
+                if (existingUser != null)
+                {
+                    return Conflict("Email is already in use.");
+                }
+                user.Email = updateRequest.Email;
+            }
+
+            if (!string.IsNullOrWhiteSpace(updateRequest.Password))
+            {
+                // Directly save the password without hashing (not recommended for production)
+                user.Password = updateRequest.Password;
+            }
+
+            try
+            {
+                _context.SaveChanges();
+                return Ok(new { message = "User updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("users/{userId}/role")]
+        public IActionResult UpdateUserRole(int userId, [FromBody] int newRoleId)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Update RoleId
+            if (newRoleId != 0)
+            {
+                user.RoleId = newRoleId;
+            }
+            else
+            {
+                return BadRequest("Invalid RoleId.");
+            }
+
+            try
+            {
+                _context.SaveChanges();
+                return Ok(new { message = "User role updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpDelete("users/{userId}")]
+        public IActionResult DeleteUser(int userId)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            _context.Users.Remove(user);
+            _context.SaveChanges();
+            return Ok();
         }
 
         private string GenerateJwtToken(User user)
