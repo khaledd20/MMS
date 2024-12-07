@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MMS.API.Models
 {
@@ -25,7 +26,13 @@ namespace MMS.API.Models
 
         public string? Description { get; set; } // Optional field for meeting description
 
-        public ICollection<Attendee> Attendees { get; set; }
+        [Column("MeetingURL")]
+        public string MeetingURL { get; set; }
 
+        [Column("Agenda")]
+        public string Agenda { get; set; }
+
+        [JsonIgnore] // Ignore Attendees for serialization
+        public ICollection<Attendee>? Attendees { get; set; } = new List<Attendee>(); // Default to empty list
     }
 }

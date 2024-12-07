@@ -512,6 +512,8 @@ C:\Users\khali_u5y15pf\OneDrive\Desktop\MMS\obj\Debug\net8.0\MMS.genruntimeconfi
 C:\Users\khali_u5y15pf\OneDrive\Desktop\MMS\obj\Debug\net8.0\ref\MMS.dll
 K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\appsettings.Development.json
 K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\appsettings.json
+K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\package-lock.json
+K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\package.json
 K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\MMS.exe
 K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\MMS.deps.json
 K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\MMS.runtimeconfig.json
@@ -682,5 +684,3 @@ K:\INTALIO\PROJECTS\MMS\MMS-API\obj\Debug\net8.0\refint\MMS.dll
 K:\INTALIO\PROJECTS\MMS\MMS-API\obj\Debug\net8.0\MMS.pdb
 K:\INTALIO\PROJECTS\MMS\MMS-API\obj\Debug\net8.0\MMS.genruntimeconfig.cache
 K:\INTALIO\PROJECTS\MMS\MMS-API\obj\Debug\net8.0\ref\MMS.dll
-K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\package-lock.json
-K:\INTALIO\PROJECTS\MMS\MMS-API\bin\Debug\net8.0\package.json

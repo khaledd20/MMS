@@ -94,34 +94,37 @@ namespace MMS.API.Controllers
                 return BadRequest("Meeting ID mismatch.");
             }
 
-            var existingMeeting = await _context.Meetings.FindAsync(id);
+            var existingMeeting = await _context.Meetings
+                    .AsNoTracking() // Prevent EF from tracking relationships like Attendees
+                    .FirstOrDefaultAsync(m => m.MeetingId == id);            
+            
             if (existingMeeting == null)
             {
                 return NotFound($"Meeting with ID {id} not found.");
             }
 
-            // Update properties
+             // Update only the fields that are part of the Meeting
             existingMeeting.Title = meeting.Title;
             existingMeeting.Date = meeting.Date;
             existingMeeting.Time = meeting.Time;
             existingMeeting.Status = meeting.Status;
             existingMeeting.Description = meeting.Description;
-            existingMeeting.OrganizerId = meeting.OrganizerId; // Use organizerId directly
+            existingMeeting.MeetingURL = meeting.MeetingURL;
+            existingMeeting.Agenda = meeting.Agenda;
+            existingMeeting.OrganizerId = meeting.OrganizerId;
 
             _context.Entry(existingMeeting).State = EntityState.Modified;
 
             try
             {
                 await _context.SaveChangesAsync();
+                return Ok(existingMeeting); // Return updated Meeting
             }
             catch (DbUpdateException ex)
             {
-                return BadRequest($"Failed to update meeting: {ex.Message}");
+                return BadRequest($"Error updating meeting: {ex.Message}");
             }
-
-            return Ok(existingMeeting); // Return updated meeting for confirmation
         }
-
 
 
         // DELETE: api/meetings/{id}
