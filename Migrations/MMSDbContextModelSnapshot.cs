@@ -51,7 +51,7 @@ namespace MMS.Migrations
 
                     b.HasIndex("OrganizerId");
 
-                    b.ToTable("Meetings");
+                    b.ToTable("Meetings", (string)null);
                 });
 
             modelBuilder.Entity("MMS.API.Models.Permission", b =>
@@ -68,7 +68,7 @@ namespace MMS.Migrations
 
                     b.HasKey("PermissionId");
 
-                    b.ToTable("Permissions");
+                    b.ToTable("Permissions", (string)null);
                 });
 
             modelBuilder.Entity("MMS.API.Models.Role", b =>
@@ -85,7 +85,7 @@ namespace MMS.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("MMS.API.Models.User", b =>
@@ -113,7 +113,7 @@ namespace MMS.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("PermissionRole", b =>
@@ -128,7 +128,7 @@ namespace MMS.Migrations
 
                     b.HasIndex("RolesRoleId");
 
-                    b.ToTable("PermissionRole");
+                    b.ToTable("PermissionRole", (string)null);
                 });
 
             modelBuilder.Entity("MMS.API.Models.Meeting", b =>

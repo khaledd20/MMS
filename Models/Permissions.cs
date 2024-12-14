@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 namespace MMS.API.Models
-{
+{   
+    [Table("Permissions")] // Explicitly specify table name to avoid conflicts
+
     public class Permissions
     {
         [Key] // Define this as the primary key        

@@ -24,6 +24,30 @@ namespace MMS.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Permission_Role relationships
+            modelBuilder.Entity<Permission_Role>()
+                .HasKey(pr => pr.Id); // Primary key
+
+            modelBuilder.Entity<Permission_Role>()
+                .HasOne(pr => pr.Role)
+                .WithMany()
+                .HasForeignKey(pr => pr.RoleId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete on Role deletion
+
+            modelBuilder.Entity<Permission_Role>()
+                .HasOne(pr => pr.Permission)
+                .WithMany()
+                .HasForeignKey(pr => pr.PermissionId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete on Permission deletion
+            
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Role)
+                .WithMany()
+                .HasForeignKey(u => u.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
             // Configure Attendee relationships
             modelBuilder.Entity<Attendee>()
                 .HasKey(a => a.Id);

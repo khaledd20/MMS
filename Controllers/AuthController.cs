@@ -5,6 +5,7 @@ using MMS.API.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace MMS.API.Controllers
 {
@@ -24,24 +25,33 @@ namespace MMS.API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            // Validate user
-            var user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+            var user = _context.Users
+                .Include(u => u.Role) // Include the Role navigation property
+                .FirstOrDefault(u => u.Email == request.Email);
+
             if (user == null || user.Password != request.Password)
             {
                 return Unauthorized("Invalid email or password.");
             }
 
-            // Generate JWT Token using the helper method
-            var tokenString = GenerateJwtToken(user);
+            // Fetch permissions based on the user's role
+            var permissions = _context.Permission_Role
+                .Include(pr => pr.Permission) // Include Permission entity
+                .Where(pr => pr.RoleId == user.RoleId)
+                .Select(pr => pr.Permission.PermissionName) // Access PermissionName
+                .ToList();
 
-            // Return token in a detailed format
+            // Generate JWT token with permissions
+            var token = GenerateJwtToken(user, permissions);
+
             return Ok(new
             {
-                Bearer = tokenString,
-                tokenType = "Bearer",
-                expiresIn = 3600 // 1 hour in seconds
+                Bearer = token,
+                TokenType = "Bearer",
+                ExpiresIn = 3600
             });
         }
+
 
         [HttpPost("register")]
         public IActionResult Register([FromBody] RegisterRequest request)
@@ -203,20 +213,25 @@ namespace MMS.API.Controllers
             return Ok();
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(User user, List<string> permissions)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]); // Replace with a secure key from configuration
+            var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim("RoleId", user.RoleId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim("UserId", user.UserId.ToString()) // Add UserId to the claims
-
+                new Claim("UserId", user.UserId.ToString())
             };
+
+            // Add permissions as claims
+            foreach (var permission in permissions)
+            {
+                claims.Add(new Claim("Permission", permission));
+            }
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -228,5 +243,6 @@ namespace MMS.API.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
     }
 }

@@ -21,5 +21,8 @@ namespace MMS.API.Models
 
         [Column("role_id")] // Map to the database column "role_id"
         public int RoleId { get; set; }
+
+        // Navigation property to Role
+        public Role? Role { get; set; }
     }
 }
