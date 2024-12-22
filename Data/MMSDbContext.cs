@@ -19,6 +19,8 @@ namespace MMS.API.Data
         public required DbSet<Attendee> Attendees { get; set; }
         public required DbSet<MeetingMinute> Minutes { get; set; } // Add this line
 
+        public required DbSet<Status> Status { get; set; } // Add this line
+
         // Configure relationships and mappings
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,7 +76,12 @@ namespace MMS.API.Data
                 .HasForeignKey(m => m.OrganizerId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of organizer if referenced
 
-            // Add other entity configurations as needed
-        }
-    }
+            // Add Status relationships
+                        modelBuilder.Entity<Meeting>()
+                            .HasOne(m => m.Status)
+                            .WithMany(s => s.Meetings)
+                            .HasForeignKey(m => m.StatusId)
+                            .OnDelete(DeleteBehavior.Restrict); // Prevent cascading delete of status        }
+                }
+    }    
 }

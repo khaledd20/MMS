@@ -23,6 +23,8 @@ namespace MMS.API.Controllers
         {
             var meetings = await _context.Meetings
                 .Include(m => m.Organizer) // Include related organizer details
+                .Include(m => m.Status) // Include status details
+               
                 .ToListAsync();
 
             return Ok(meetings);
@@ -34,6 +36,8 @@ namespace MMS.API.Controllers
         {
             var meeting = await _context.Meetings
                 .Include(m => m.Organizer)
+                .Include(m => m.Status) // Include status details
+
                 .FirstOrDefaultAsync(m => m.MeetingId == id);
 
             if (meeting == null)
@@ -76,7 +80,14 @@ namespace MMS.API.Controllers
             {
                 return BadRequest("Invalid organizer ID.");
             }
-
+           
+            // Validate that the status exists
+                var status = await _context.Status.FindAsync(meeting.StatusId);
+                if (status == null)
+                {
+                    return BadRequest("Invalid status ID.");
+                }
+            
             _context.Meetings.Add(meeting);
             await _context.SaveChangesAsync();
 
@@ -103,11 +114,17 @@ namespace MMS.API.Controllers
                 return NotFound($"Meeting with ID {id} not found.");
             }
 
+             // Validate that the status exists
+            var status = await _context.Status.FindAsync(meeting.StatusId);
+            if (status == null)
+            {
+                return BadRequest("Invalid status ID.");
+            }
              // Update only the fields that are part of the Meeting
             existingMeeting.Title = meeting.Title;
             existingMeeting.Date = meeting.Date;
             existingMeeting.Time = meeting.Time;
-            existingMeeting.Status = meeting.Status;
+            existingMeeting.StatusId = meeting.StatusId; // Updated status reference
             existingMeeting.Description = meeting.Description;
             existingMeeting.MeetingURL = meeting.MeetingURL;
             existingMeeting.Agenda = meeting.Agenda;

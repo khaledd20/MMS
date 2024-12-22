@@ -22,8 +22,11 @@ namespace MMS.API.Models
         [ForeignKey("OrganizerId")]
         public User? Organizer { get; set; } // Navigation property
 
-        public required string Status { get; set; }
+        [Column("status_id")]
+        public int StatusId { get; set; } // FK to Status table
 
+        [ForeignKey("StatusId")]
+        public Status? Status { get; set; } // Navigation property
         public string? Description { get; set; } // Optional field for meeting description
 
         [Column("MeetingURL")]
